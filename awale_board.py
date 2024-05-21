@@ -37,7 +37,7 @@ class AwaleBoard:
 
     def evaluate(self):
         # Evaluate the board state to determine the winner
-        return sum(self.board[0]) - sum(self.board[1])
+        return self.player_store[0] - self.player_store[1]
 
     def is_game_over(self):
         # Check if the game is over
