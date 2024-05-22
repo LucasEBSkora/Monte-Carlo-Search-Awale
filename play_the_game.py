@@ -28,5 +28,5 @@ def play_game(iterations):
     if num_moves > 0:
         print(f"Average depth per move: {total_depth / num_moves:.3f}")
 
-play_game(1000) 
+play_game(10) 
 
