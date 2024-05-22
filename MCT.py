@@ -9,13 +9,12 @@ class MCTSNode:
         self.children = []
         self.visits = 0
         self.wins = 0
+        self.depth = parent.depth + 1 if parent else 0
 
     def select_child(self):
-        # Select a child node based on UCT (Upper Confidence Bound for Trees)
         return max(self.children, key=lambda node: node.wins / (node.visits + 1e-10) + math.sqrt(2 * math.log(self.visits + 1e-10) / (node.visits + 1e-10)))
 
     def expand(self):
-        # Expand the tree by adding a new child node
         moves = self.board.get_moves()
         for move in moves:
             new_board = self.board.copy()
@@ -23,7 +22,6 @@ class MCTSNode:
             self.children.append(MCTSNode(new_board, move, self))
 
     def simulate(self):
-        # Perform a random simulation from the current node
         current_board = self.board.copy()
         while not current_board.is_game_over():
             possible_moves = current_board.get_moves()
@@ -34,7 +32,6 @@ class MCTSNode:
         return current_board.evaluate()
 
     def backpropagate(self, result):
-        # Update the node's statistics based on the simulation result
         self.visits += 1
         self.wins += result
         if self.parent:
@@ -42,16 +39,18 @@ class MCTSNode:
 
 def mcts_search(board, iterations):
     root = MCTSNode(board)
+    max_depth = 0
     for _ in range(iterations):
         node = root
-        # Selection
         while node.children:
             node = node.select_child()
-        # Expansion
         if not node.board.is_game_over():
             node.expand()
-        # Simulation
         result = node.simulate()
-        # Backpropagation
         node.backpropagate(result)
-    return max(root.children, key=lambda node: node.visits).move
+        max_depth = max(max_depth, node.depth)
+
+    best_move = max(root.children, key=lambda node: node.visits).move
+    average_depth = max_depth / root.visits if root.visits else 0
+    move_evaluations = [child.wins / child.visits if child.visits else 0 for child in root.children]
+    return best_move, average_depth, move_evaluations
