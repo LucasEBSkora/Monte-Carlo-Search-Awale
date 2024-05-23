@@ -32,10 +32,15 @@ class AwaleBoard:
         self.current_player = 1 - self.current_player
 
     def evaluate(self):
+        if self.is_game_over():
+            score0 = self.player_store[0] + sum(self.board[0])
+            score1 = self.player_store[1] + sum(self.board[1])
+            return score0 - score1
         return self.player_store[0] - self.player_store[1]
 
+
     def is_game_over(self):
-        return all(seeds == 0 for seeds in self.board[self.current_player])
+        return all(seeds == 0 for seeds in self.board[0]) or all(seeds == 0 for seeds in self.board[1])
 
     def copy(self):
         new_board = AwaleBoard()
